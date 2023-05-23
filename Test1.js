@@ -27,7 +27,7 @@ export default function Test1() {
     if(Camera){
       try {
         const data = await camera.recordAsync({
-          maxDuration: 10,
+          maxDuration: 30,
         })
         setRecord(data.uri);
         console.log("takeVideo: " + data.uri);
@@ -40,10 +40,10 @@ export default function Test1() {
         });
   
         // 서버로 전송
-        const response = await fetch('#API_ENDPOINT', {
+        const response = await fetch(`3.34.132.42/video/process-video/`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': "application/x-www-form-urlencoded"
           },
           body: formData,
         });
