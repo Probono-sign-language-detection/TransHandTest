@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { Camera } from 'expo-camera';
 import { Video } from 'expo-av';
-import { WebSocket } from 'expo';
+import WS from 'react-native-websocket';
 
 export default function TestStream() {
   const [hasAudioPermission, setHasAudioPermission] = useState(null);
@@ -17,11 +17,11 @@ export default function TestStream() {
 
   useEffect(() => {
     (async () => {
-      const cameraStatus = await Camera.requestCameraPermissionsAsync();
-      setHasCameraPermission(cameraStatus.status === 'granted');
+      const cameraStatus = await Camera.requestCameraPermissions();
+      setHasCameraPermission(cameraStatus === 'authorized');
 
-      const audioStatus = await Camera.requestMicrophonePermissionsAsync();
-      setHasAudioPermission(audioStatus.status === 'granted');
+      const audioStatus = await Camera.requestMicrophonePermissions();
+      setHasAudioPermission(audioStatus === 'authorized');
     })();
   }, []);
 
@@ -31,17 +31,18 @@ export default function TestStream() {
       console.log('WebSocket connected');
   
       // WebSocket 메시지 수신 이벤트 핸들러 등록
-      socket.onmessage = handleMessage;
+      socket.on('message', handleMessage);
     } else {
       // WebSocket이 연결이 해제되었을 때 실행할 로직
       console.log('WebSocket disconnected');
   
       // WebSocket 메시지 수신 이벤트 핸들러 제거
       if (socket) {
-        socket.onmessage = null;
+        socket.off('message', handleMessage);
       }
     }
   }, [isConnected, socket]);
+  
 
   const handleMessage = (event) => {
     // 서버로부터 메시지를 수신한 경우 실행할 로직
@@ -54,7 +55,7 @@ export default function TestStream() {
 
     try {
       // WebSocket 연결
-      const newSocket = new WebSocket(serverUrl);
+      const newSocket = new WS(serverUrl);
       setSocket(newSocket);
 
       // WebSocket이 연결되었음을 표시
@@ -76,7 +77,7 @@ export default function TestStream() {
   };
 
   const takeVideo = async () => {
-    if (camera) {
+    if (Camera) {
       try {
         const data = await camera.recordAsync({
           maxDuration: 10,

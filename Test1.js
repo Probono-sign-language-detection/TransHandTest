@@ -2,6 +2,8 @@ import React, {useState, useEffect} from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { Camera } from 'expo-camera';
 import { Video } from 'expo-av';
+import axios from 'axios';
+import { FileSystem } from 'expo'
 
 
 export default function Test1() {
@@ -23,11 +25,66 @@ export default function Test1() {
     })();
   }, []);
 
+
+  //테스트
+  const [data1, setData] = useState({
+    messages: ["제 데이터가 잘 가나요?", "안녕하세요"],
+  });
+
+  const sendDataToServer = async () => {
+    try {
+      const response = await axios
+      .post('http://3.34.132.42/video/test-post/', {
+        data1
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+//   //base64
+//   const TakeVideo = async () => {
+//     if (Camera) {
+//       try {
+//         const data = await camera.recordAsync({
+//           maxDuration: 5,
+//         });
+//         setRecord(data.uri);
+//         console.log("takeVideo: " + data.uri);
+
+//         const base64 = await FileSystem.readAsStringAsync(data.uri, {
+//           encoding: FileSystem.EncodingType.Base64,
+//         });
+
+//         const formData = new FormData();
+//         formData.append('video', base64);
+
+//         const response = await axios.post(
+//           '3.34.132.42/video/process-video/',
+//           formData,
+//           {
+//             headers: {
+//               'Content-Type': 'application/x-www-form-urlencoded',
+//             },
+//           }
+//         );
+
+//       const result = response.data;
+//       console.log("결과입니다...." + result);
+//     } catch (e) {
+//       console.error(e);
+//     }
+//   }
+// };
+
+
+  // File
   const TakeVideo = async () => {
     if(Camera){
       try {
         const data = await camera.recordAsync({
-          maxDuration: 30,
+          maxDuration: 5,
         })
         setRecord(data.uri);
         console.log("takeVideo: " + data.uri);
@@ -40,17 +97,19 @@ export default function Test1() {
         });
   
         // 서버로 전송
-        const response = await fetch(`3.34.132.42/video/process-video/`, {
-          method: 'POST',
+        const response = await axios
+        .post('3.34.132.42/video/test-post/', 
+        formData, {
           headers: {
-            'Content-Type': "application/x-www-form-urlencoded"
+            'Content-Type': 'multipart/form-data',
           },
-          body: formData,
         });
-  
+        
         // 전송 결과 처리
-        const result = await response.json();
-        console.log(result);
+        const result = response.data;
+        console.log("결과입니다...." + result);
+
+
       } catch (e) {
         console.error(e);
       }
@@ -94,6 +153,7 @@ export default function Test1() {
           onPlaybackStatusUpdate={status => setStatus(()=>status)}
           />
           <View styles={styles.buttons}>
+          <Button title="데이터 전송" onPress={sendDataToServer} />
             <Button 
               title = {status.isPlaying ? 'Pause' : 'Play'}
               onPress={() => 
