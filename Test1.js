@@ -43,78 +43,78 @@ export default function Test1() {
     }
   };
 
-//   //base64
-//   const TakeVideo = async () => {
-//     if (Camera) {
-//       try {
-//         const data = await camera.recordAsync({
-//           maxDuration: 5,
-//         });
-//         setRecord(data.uri);
-//         console.log("takeVideo: " + data.uri);
-
-//         const base64 = await FileSystem.readAsStringAsync(data.uri, {
-//           encoding: FileSystem.EncodingType.Base64,
-//         });
-
-//         const formData = new FormData();
-//         formData.append('video', base64);
-
-//         const response = await axios.post(
-//           '3.34.132.42/video/process-video/',
-//           formData,
-//           {
-//             headers: {
-//               'Content-Type': 'application/x-www-form-urlencoded',
-//             },
-//           }
-//         );
-
-//       const result = response.data;
-//       console.log("결과입니다...." + result);
-//     } catch (e) {
-//       console.error(e);
-//     }
-//   }
-// };
-
-
-  // File
+  //base64
   const TakeVideo = async () => {
-    if(Camera){
+    if (Camera) {
       try {
         const data = await camera.recordAsync({
           maxDuration: 5,
-        })
+        });
         setRecord(data.uri);
         console.log("takeVideo: " + data.uri);
 
+        const base64 = await FileSystem.readAsStringAsync(data.uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
         const formData = new FormData();
-        formData.append('video', {
-          name: 'video_upload',
-          type: 'video/mp4',
-          uri: data.uri,
-        });
-  
-        // 서버로 전송
-        const response = await axios
-        .post('3.34.132.42/video/test-post/', 
-        formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        
-        // 전송 결과 처리
-        const result = response.data;
-        console.log("결과입니다...." + result);
+        formData.append('video', base64);
 
+        const response = await axios.post(
+          '3.34.132.42/video/process-video/',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          }
+        );
 
-      } catch (e) {
-        console.error(e);
-      }
+      const result = response.data;
+      console.log("결과입니다...." + result);
+    } catch (e) {
+      console.error(e);
     }
-  };
+  }
+};
+
+
+  // // File
+  // const TakeVideo = async () => {
+  //   if(Camera){
+  //     try {
+  //       const data = await camera.recordAsync({
+  //         maxDuration: 5,
+  //       })
+  //       setRecord(data.uri);
+  //       console.log("takeVideo: " + data.uri);
+
+  //       const formData = new FormData();
+  //       formData.append('video', {
+  //         name: 'video_upload',
+  //         type: 'video/mp4',
+  //         uri: data.uri,
+  //       });
+  
+  //       // 서버로 전송
+  //       const response = await axios
+  //       .post('3.34.132.42/video/test-post/', 
+  //       formData, {
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data',
+  //         },
+  //       });
+        
+  //       // 전송 결과 처리
+  //       const result = response.data;
+  //       console.log("결과입니다...." + result);
+
+
+  //     } catch (e) {
+  //       console.error(e);
+  //     }
+  //   }
+  // };
 
   const stopVideo = async () => {
     camera.stopRecording();
