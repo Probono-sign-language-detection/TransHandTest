@@ -1,15 +1,13 @@
-import React, {useState, useEffect} from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import React, {useState, useEffect, useRef} from 'react';
+import { StyleSheet, Text, View, Button, Image } from 'react-native';
 import { Camera } from 'expo-camera';
 import { Video } from 'expo-av';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 
 
-export default function Test1() {
-  //마이크 허가 요청
+export default function RealTimeCamera() {
   const [hasAudioPermission, setHasAudioPermission] = useState(null);
-  //카메라 허가 요청
   const [hasCameraPermission, setHasCameraPersmission] = useState(null);
   const [camera, setCamera] = useState(null);
   const [record, setRecord] = useState(null);
@@ -17,36 +15,50 @@ export default function Test1() {
   const video = React.useRef(null);
   const [status, setStatus] = React.useState({});
 
+  const [isRecording, setIsRecording] = useState(false);
+  const timerRef = useRef(null);
+
+  const [firstCapturedFrameUri, setFirstCapturedFrameUri] = useState(null);
+  const [isFirstFrameDisplayed, setIsFirstFrameDisplayed] = useState(false);
+
+
+  // 캡처한 프레임의 URI를 상태 변수에 저장
+  const [capturedFrameUri, setCapturedFrameUri] = useState(null);
+
   useEffect(() => {
     (async () => {
+        // 카메라 권한 요청
         const cameraStatus = await Camera.requestCameraPermissionsAsync();
         setHasCameraPersmission(cameraStatus.status === 'granted');
 
+        // 마이크 권한 요청
         const audioStatus = await Camera.requestMicrophonePermissionsAsync();
         setHasAudioPermission(audioStatus.status === 'granted');
     })();
   }, []);
 
-  //base64
-  const TakeVideo = async () => {
+  //영상 1초 단위로 캡쳐해서 저장
+  const captureAndSendFrame = async () => {
     // 카메라가 존재하는 경우 실행
-    if (Camera) {
-      // try-catch 문으로 오류 처리 시작
+    if (camera) {
+        // try-catch 문으로 오류 처리 시작
       try {
         const data = await camera.recordAsync({
-          maxDuration: 5,
+          maxDuration: 1,
         });
-        // 영상 촬영을 시작하고 최대 5초 동안 녹화
+        // 영상 촬영을 시작하고 최대 1초 동안 녹화
 
-        // 촬영된 영상의 URI를 상태 변수에 설정
-        setRecord(data.uri);
-        console.log("takeVideo: " + data.uri);
-        // 촬영된 영상의 URI를 콘솔에 출력
+        // 캡처한 프레임의 URI를 콘솔에 출력
+        console.log("Captured frame:", data.uri);
 
-        
-        // const base64 = await FileSystem.readAsStringAsync(data.uri, {
-        //   encoding: FileSystem.EncodingType.Base64,
-        // });
+        // 캡처한 프레임의 URI를 상태 변수에 저장
+        setCapturedFrameUri(data.uri);
+
+        // 첫 번째 캡처된 프레임의 URI를 저장하고 플래그를 설정하여 화면에 표시
+        if (!isFirstFrameDisplayed) {
+            setFirstCapturedFrameUri(data.uri);
+            setIsFirstFrameDisplayed(true);
+        }
 
         // 촬영된 영상을 FormData에 첨부하기 위해 FormData 객체 생성
         const formData = new FormData();
@@ -57,31 +69,41 @@ export default function Test1() {
         });
 
         // Axios를 사용하여 백엔드로 Multi-part form data를 전송하는 POST 요청을 보냄
-        const response = await axios.post(
-          '3.34.132.42/video/process-video/',
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        );
-        
-      // 응답 데이터를 변수에 저장하고, 콘솔에 출력
-      const result = response.data;
-      console.log("결과입니다...." + result);
-    } catch (e) {
-      // 오류가 발생한 경우 오류를 콘솔에 출력
-      console.error(e);
-    }
-  }
-};
+        // await axios.post(
+        //   '3.34.132.42/video/process-frame/',
+        //   formData,
+        //   {
+        //     headers: {
+        //       'Content-Type': 'multipart/form-data',
+        //     },
+        //   }
+        // );
 
-  const stopVideo = async () => {
-    camera.stopRecording();
-    // camera.current.stopRecording();
-    console.log("끝")
-  }
+
+      } catch (e) {
+        // 오류가 발생한 경우 오류를 콘솔에 출력
+        console.error(e);
+      }
+    }
+  };
+
+  // Take Video 클릭시
+  const handleTakeVideo = () => {
+    if (isRecording) {
+      clearInterval(timerRef.current);
+      setIsRecording(false);
+    } else {
+      setIsRecording(true);
+      //1초마다 한 번씩 captureAndSendFrame 실행.
+      timerRef.current = setInterval(captureAndSendFrame, 1000);
+    }
+  };
+
+  //Stop Video 클릭시
+  const handleStopVideo = () => {
+    clearInterval(timerRef.current);
+    setIsRecording(false);
+  };
 
   if(hasCameraPermission === null || hasAudioPermission === null) {
     return <View />;
@@ -103,10 +125,10 @@ export default function Test1() {
             ratio = {'4:3'} />
         </View>
         <Video
-          ref = {video}
-          style = {styles.video}
-          source = {{
-            uri: record,
+          ref={video}
+          style={styles.video}
+          source={{
+            uri: isFirstFrameDisplayed ? firstCapturedFrameUri : record,
           }}
           useNativeControls
           resizeMode='contain'
@@ -114,7 +136,6 @@ export default function Test1() {
           onPlaybackStatusUpdate={status => setStatus(()=>status)}
           />
           <View styles={styles.buttons}>
-          {/* <Button title="데이터 전송" onPress={sendDataToServer} /> */}
             <Button 
               title = {status.isPlaying ? 'Pause' : 'Play'}
               onPress={() => 
@@ -132,8 +153,8 @@ export default function Test1() {
             );
           }}
           />
-          <Button title="Take Video" onPress={()=>TakeVideo()} />
-          <Button title="Stop Video" onPress={()=>stopVideo()} />
+          <Button title="Take Video" onPress={()=>handleTakeVideo()} />
+          <Button title="Stop Video" onPress={()=>handleStopVideo()} />
       </View>
     </>
   );

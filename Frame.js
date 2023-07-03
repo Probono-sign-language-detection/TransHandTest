@@ -4,12 +4,11 @@ import { Camera } from 'expo-camera';
 import { Video } from 'expo-av';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
+import { ExternalDirectoryPath } from 'react-native-fs';
 
 
-export default function Test1() {
-  //마이크 허가 요청
+export default function Frame() {
   const [hasAudioPermission, setHasAudioPermission] = useState(null);
-  //카메라 허가 요청
   const [hasCameraPermission, setHasCameraPersmission] = useState(null);
   const [camera, setCamera] = useState(null);
   const [record, setRecord] = useState(null);
@@ -27,55 +26,54 @@ export default function Test1() {
     })();
   }, []);
 
-  //base64
+
   const TakeVideo = async () => {
-    // 카메라가 존재하는 경우 실행
-    if (Camera) {
-      // try-catch 문으로 오류 처리 시작
+    const uploadVideoFrames = async(videoUri) => {
+        const {uri} = await FileSystem.getInfoAsync(videoUri);
+        const frames = await extractFrames(uri);
+
+        frames.forEach(async (frame, index) => {
+            try {
+                const formData = new FormData();
+                formData.append('frame', {
+                    uri: frame.uri,
+                    type: 'image/jpeg',
+                    name: 'frame_${index}.jpg',
+                });
+
+                const response = await axios.post(
+                    '3.34.132.42/video/process-video/',
+                    formData,
+                    {
+                      headers: {
+                        'Content-Type': 'multipart/form-data',
+                      },
+                    }
+                  );
+                  await FileSystem.deleteAsync(frame.uri);
+                  console.log(response);
+            } catch(error) {
+                console.log(error);
+            }
+        })
+    }
+    if (camera) {
       try {
         const data = await camera.recordAsync({
           maxDuration: 5,
-        });
-        // 영상 촬영을 시작하고 최대 5초 동안 녹화
-
-        // 촬영된 영상의 URI를 상태 변수에 설정
-        setRecord(data.uri);
+        })
+        uploadVideoFrames(data.uri)
         console.log("takeVideo: " + data.uri);
-        // 촬영된 영상의 URI를 콘솔에 출력
 
-        
-        // const base64 = await FileSystem.readAsStringAsync(data.uri, {
-        //   encoding: FileSystem.EncodingType.Base64,
-        // });
 
-        // 촬영된 영상을 FormData에 첨부하기 위해 FormData 객체 생성
-        const formData = new FormData();
-        formData.append('video', {
-          uri: data.uri,
-          type: 'video/mp4',
-          name: 'video.mp4',
-        });
-
-        // Axios를 사용하여 백엔드로 Multi-part form data를 전송하는 POST 요청을 보냄
-        const response = await axios.post(
-          '3.34.132.42/video/process-video/',
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        );
-        
-      // 응답 데이터를 변수에 저장하고, 콘솔에 출력
       const result = response.data;
       console.log("결과입니다...." + result);
     } catch (e) {
-      // 오류가 발생한 경우 오류를 콘솔에 출력
       console.error(e);
     }
   }
 };
+
 
   const stopVideo = async () => {
     camera.stopRecording();
