@@ -1,8 +1,8 @@
 Arguments: 
-  /opt/homebrew/Cellar/node/20.1.0/bin/node /opt/homebrew/Cellar/yarn/1.22.19/libexec/bin/yarn.js add expo-websocket
+  /opt/homebrew/Cellar/node/20.1.0/bin/node /opt/homebrew/Cellar/yarn/1.22.19/libexec/bin/yarn.js add react-native-fs-blob
 
 PATH: 
-  /Users/kimyeeun/.pyenv/shims:/opt/homebrew/bin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/opt/homebrew/bin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/Library/Java/JavaVirtualMachines/jdk1.8.0_361.jdk/Contents/Home/bin:/Library/Java/JavaVirtualMachines/jdk1.8.0_361.jdk/Contents/Home/bin
+  /Users/kimyeeun/.pyenv/shims:/opt/homebrew/bin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/kimyeeun/anaconda3/bin:/Users/kimyeeun/anaconda3/condabin:/opt/homebrew/bin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/Library/Java/JavaVirtualMachines/jdk1.8.0_361.jdk/Contents/Home/bin:/Library/Java/JavaVirtualMachines/jdk1.8.0_361.jdk/Contents/Home/bin
 
 Yarn version: 
   1.22.19
@@ -14,7 +14,7 @@ Platform:
   darwin arm64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/expo-websocket: Not found
+  Error: https://registry.yarnpkg.com/react-native-fs-blob: Not found
       at params.callback [as _callback] (/opt/homebrew/Cellar/yarn/1.22.19/libexec/lib/cli.js:66145:18)
       at self.callback (/opt/homebrew/Cellar/yarn/1.22.19/libexec/lib/cli.js:140890:22)
       at Request.emit (node:events:511:28)
@@ -39,14 +39,19 @@ npm manifest:
     },
     "dependencies": {
       "@react-navigation/native": "^6.1.6",
+      "axios": "^1.4.0",
+      "base-64": "^1.0.0",
       "expo": "~48.0.15",
       "expo-av": "^13.2.1",
       "expo-camera": "~13.2.1",
+      "expo-file-system": "~15.2.2",
       "expo-media-library": "~15.2.3",
       "expo-sharing": "~11.2.2",
       "expo-status-bar": "~1.4.4",
       "react": "^18.2.0",
-      "react-native": "0.71.7"
+      "react-native": "0.71.7",
+      "react-native-base64": "^0.2.1",
+      "react-native-websocket": "^1.0.2"
     },
     "devDependencies": {
       "@babel/core": "^7.20.0"
@@ -2193,6 +2198,15 @@ Lockfile:
     resolved "https://registry.npmjs.org/atob/-/atob-2.1.2.tgz"
     integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
   
+  axios@^1.4.0:
+    version "1.4.0"
+    resolved "https://registry.npmjs.org/axios/-/axios-1.4.0.tgz"
+    integrity sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==
+    dependencies:
+      follow-redirects "^1.15.0"
+      form-data "^4.0.0"
+      proxy-from-env "^1.1.0"
+  
   babel-core@^7.0.0-bridge.0:
     version "7.0.0-bridge.0"
     resolved "https://registry.npmjs.org/babel-core/-/babel-core-7.0.0-bridge.0.tgz"
@@ -2293,6 +2307,11 @@ Lockfile:
     version "1.0.2"
     resolved "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz"
     integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
+  
+  base-64@^1.0.0:
+    version "1.0.0"
+    resolved "https://registry.npmjs.org/base-64/-/base-64-1.0.0.tgz"
+    integrity sha512-kwDPIFCGx0NZHog36dj+tHiwP4QMzsZ3AgMViUBKI0+V5n4U0ufTCUMhnQ04diaRI8EX/QcPfql7zlhZ7j4zgg==
   
   base@^0.11.1:
     version "0.11.2"
@@ -3525,6 +3544,11 @@ Lockfile:
     resolved "https://registry.npmjs.org/flow-parser/-/flow-parser-0.206.0.tgz"
     integrity sha512-HVzoK3r6Vsg+lKvlIZzaWNBVai+FXTX1wdYhz/wVlH13tb/gOdLXmlTqy6odmTBhT5UoWUbq0k8263Qhr9d88w==
   
+  follow-redirects@^1.15.0:
+    version "1.15.2"
+    resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.2.tgz"
+    integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
+  
   fontfaceobserver@^2.1.0:
     version "2.3.0"
     resolved "https://registry.npmjs.org/fontfaceobserver/-/fontfaceobserver-2.3.0.tgz"
@@ -3539,6 +3563,15 @@ Lockfile:
     version "3.0.1"
     resolved "https://registry.npmjs.org/form-data/-/form-data-3.0.1.tgz"
     integrity sha512-RHkBKtLWUVwd7SqRIvCZMEvAMoGUp0XU+seQiZejj0COz3RI3hWP4sCv3gZWWLjJTd7rGwcsF5eKZGii0r/hbg==
+    dependencies:
+      asynckit "^0.4.0"
+      combined-stream "^1.0.8"
+      mime-types "^2.1.12"
+  
+  form-data@^4.0.0:
+    version "4.0.0"
+    resolved "https://registry.npmjs.org/form-data/-/form-data-4.0.0.tgz"
+    integrity sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==
     dependencies:
       asynckit "^0.4.0"
       combined-stream "^1.0.8"
@@ -5548,7 +5581,7 @@ Lockfile:
       kleur "^3.0.3"
       sisteransi "^1.0.5"
   
-  prop-types@*, prop-types@^15.6.2:
+  prop-types@*, prop-types@^15.6.1, prop-types@^15.6.2:
     version "15.8.1"
     resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz"
     integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -5556,6 +5589,11 @@ Lockfile:
       loose-envify "^1.4.0"
       object-assign "^4.1.1"
       react-is "^16.13.1"
+  
+  proxy-from-env@^1.1.0:
+    version "1.1.0"
+    resolved "https://registry.npmjs.org/proxy-from-env/-/proxy-from-env-1.1.0.tgz"
+    integrity sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==
   
   pump@^3.0.0:
     version "3.0.0"
@@ -5650,6 +5688,11 @@ Lockfile:
     resolved "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
     integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
   
+  react-native-base64@^0.2.1:
+    version "0.2.1"
+    resolved "https://registry.npmjs.org/react-native-base64/-/react-native-base64-0.2.1.tgz"
+    integrity sha512-eHgt/MA8y5ZF0aHfZ1aTPcIkDWxza9AaEk4GcpIX+ZYfZ04RcaNahO+527KR7J44/mD3efYfM23O2C1N44ByWA==
+  
   react-native-codegen@^0.71.5:
     version "0.71.5"
     resolved "https://registry.npmjs.org/react-native-codegen/-/react-native-codegen-0.71.5.tgz"
@@ -5664,6 +5707,13 @@ Lockfile:
     version "0.71.18"
     resolved "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.18.tgz"
     integrity sha512-7F6bD7B8Xsn3JllxcwHhFcsl9aHIig47+3eN4IHFNqfLhZr++3ElDrcqfMzugM+niWbaMi7bJ0kAkAL8eCpdWg==
+  
+  react-native-websocket@^1.0.2:
+    version "1.0.2"
+    resolved "https://registry.npmjs.org/react-native-websocket/-/react-native-websocket-1.0.2.tgz"
+    integrity sha512-V0yP5gEHrfP6dj3DEgMywf+yyqN6B0csGdPxv8sLSpmEQoN3e9umhwkz0OC/7Tl5BR0yAISSDIs4w95Lp1Sudg==
+    dependencies:
+      prop-types "^15.6.1"
   
   react-native@*, react-native@0.71.7:
     version "0.71.7"

@@ -10,7 +10,6 @@ export default function RealTimeCamera() {
   const [hasAudioPermission, setHasAudioPermission] = useState(null);
   const [hasCameraPermission, setHasCameraPersmission] = useState(null);
   const [camera, setCamera] = useState(null);
-  const [record, setRecord] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const video = React.useRef(null);
   const [status, setStatus] = React.useState({});
@@ -18,12 +17,8 @@ export default function RealTimeCamera() {
   const [isRecording, setIsRecording] = useState(false);
   const timerRef = useRef(null);
 
-  const [firstCapturedFrameUri, setFirstCapturedFrameUri] = useState(null);
-  const [isFirstFrameDisplayed, setIsFirstFrameDisplayed] = useState(false);
-
-
   // 캡처한 프레임의 URI를 상태 변수에 저장
-  const [capturedFrameUri, setCapturedFrameUri] = useState(null);
+  const [currentVideoUri, setCurrentVideoUri] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -51,13 +46,9 @@ export default function RealTimeCamera() {
         // 캡처한 프레임의 URI를 콘솔에 출력
         console.log("Captured frame:", data.uri);
 
-        // 캡처한 프레임의 URI를 상태 변수에 저장
-        setCapturedFrameUri(data.uri);
-
         // 첫 번째 캡처된 프레임의 URI를 저장하고 플래그를 설정하여 화면에 표시
         if (!isFirstFrameDisplayed) {
-            setFirstCapturedFrameUri(data.uri);
-            setIsFirstFrameDisplayed(true);
+          setCurrentVideoUri(data.uri); 
         }
 
         // 촬영된 영상을 FormData에 첨부하기 위해 FormData 객체 생성
@@ -68,7 +59,7 @@ export default function RealTimeCamera() {
           name: 'video.mp4',
         });
 
-        // Axios를 사용하여 백엔드로 Multi-part form data를 전송하는 POST 요청을 보냄
+        //Axios를 사용하여 백엔드로 Multi-part form data를 전송하는 POST 요청을 보냄
         // await axios.post(
         //   '3.34.132.42/video/process-frame/',
         //   formData,
@@ -122,13 +113,14 @@ export default function RealTimeCamera() {
             ref = {ref => setCamera(ref)}
             style = {styles.fixedRatio}
             type = {type}
-            ratio = {'4:3'} />
+            ratio = {'4:3'} 
+            whiteBalance={Camera.Constants.WhiteBalance.auto}/>
         </View>
         <Video
           ref={video}
           style={styles.video}
           source={{
-            uri: isFirstFrameDisplayed ? firstCapturedFrameUri : record,
+            uri: currentVideoUri,
           }}
           useNativeControls
           resizeMode='contain'
